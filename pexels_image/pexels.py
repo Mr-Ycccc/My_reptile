@@ -1,6 +1,6 @@
 #!usr/bin/env python
 # -*-coding:utf-8 -*-
-#Run_by:Python2
+# Run_by:Python2
 
 # 实战小项目：爬取pexels网站获取高清原图（做成图片下载器）
 import re
@@ -27,9 +27,11 @@ class Spider():
 			re.S)
 		items = re.search(pattern, result)
 		if items.group(2) >= 1:
-			print u'\n这个主题共有图片', items.group(2), u'页'
+			print
+			u'\n这个主题共有图片', items.group(2), u'页'
 		else:
-			print u'\n哎呀，木有您想要的图呢。。。'
+			print
+			u'\n哎呀，木有您想要的图呢。。。'
 		return items.group(2)
 
 	# 获取链接部分
@@ -63,10 +65,12 @@ class Spider():
 				f.write(picture.content)
 				f.close()
 			except requests.exceptions.ConnectionError:
-				print 'Download error:requests.exceptions.ConnectionError'
+				print
+				'Download error:requests.exceptions.ConnectionError'
 				return None
 		else:
-			print u'图片已经存在，跳过！'
+			print
+			u'图片已经存在，跳过！'
 			return False
 
 	# 创建目录
@@ -76,10 +80,12 @@ class Spider():
 		if not E:
 			os.makedirs(os.path.join('F:\Desktop\code\pexels', self.path))
 			os.chdir(os.path.join('F:\Desktop\code\pexels', self.path))
-			print u'成功创建名为', self.path, u'的文件夹'
+			print
+			u'成功创建名为', self.path, u'的文件夹'
 			return self.path
 		else:
-			print u'名为', self.path, u'的文件夹已经存在...'
+			print
+			u'名为', self.path, u'的文件夹已经存在...'
 			return False
 
 	# 对一页的操作
@@ -89,7 +95,8 @@ class Spider():
 		for item in items:
 			# 记得去掉后面的'?'
 			detailURL = 'https://static.pexels.com/photos/' + item[0] + '/' + item[1][:-1]
-			print u'\n', u'正在下载并保存图片', i
+			print
+			u'\n', u'正在下载并保存图片', i
 			self.saveImage(detailURL, name=item[1][:-1])
 			time.sleep(0.5)
 			i += 1
@@ -101,7 +108,8 @@ class Spider():
 		Start = int(raw_input(u'请输入下载起始页数：'))
 		if Numbers >= 1:
 			for page in range(Start, Start + Num):
-				print u'\n', u'正在获取第', page, u'页的内容'
+				print
+				u'\n', u'正在获取第', page, u'页的内容'
 				self.url = 'https://www.pexels.com/search/' + str(self.keyword) + '/?page=' + str(page)
 				self.makeDir(path=self.keyword + 'Page' + str(page))
 				self.saveOnePage(oneURL=self.url)
@@ -109,7 +117,8 @@ class Spider():
 		else:
 			return False
 
-		print  u'\n', u'圆满成功!!!'
+		print
+		u'\n', u'圆满成功!!!'
 
 
 spider = Spider()
