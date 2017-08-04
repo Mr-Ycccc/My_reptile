@@ -14,8 +14,8 @@ all_a = Soup.find('div', class_='all').find_all('a')  ##意思是先查找 class
 for a in all_a:
 	title = a.get_text()  # 取出a标签的文本
 	path = str(title).strip()  ##去掉空格
-	os.makedirs(os.path.join("D:\mzitu", path))  ##创建一个存放套图的文件夹
-	os.chdir("D:\mzitu\\" + path)  ##切换到上面创建的文件夹
+	os.makedirs(os.path.join("D:\mztu", path))  ##创建一个存放套图的文件夹
+	os.chdir("D:\mztu\\" + path)  ##切换到上面创建的文件夹
 	href = a['href']  # 取出a标签的href 属性
 	html = requests.get(href, headers=headers)  ##上面说过了
 	html_Soup = BeautifulSoup(html.text, 'lxml')  ##上面说过了
