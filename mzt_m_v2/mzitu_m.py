@@ -5,6 +5,7 @@ import os
 from Download import request
 from pymongo import MongoClient
 import  datetime
+import multiprocessing
 
 class mzitu():
 
@@ -102,7 +103,6 @@ class mzitu():
 			print(u'名字叫做', path, u'的文件夹已经存在了！')
 			os.chdir(os.path.join("D:\mzitu", path))  ##切换到目录
 			return False
-
 
 Mzitu = mzitu()  ##实例化
 Mzitu.all_url('http://www.mzitu.com/all')  ##给函数all_url传入参数  你可以当作启动爬虫（就是入口）
