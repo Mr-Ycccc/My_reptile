@@ -12,66 +12,67 @@ class Mistar():
 		#连接mongodb
 		client=MongoClient()
 		db=client['Mistar']
+		UA='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36'
+		referer='http://www.mistar8.com'
+		self.headers = {'User-Agent': UA, "referer": referer}
 		self.mistart_collection=db['mistar']
 		self.title=''
-		self.url_start=''
+		self.url_list=[]
 		self.img_urls=[]
 		self.max_num=''
 
 	def all_url(self,url):
 		for i in range(1,168):
 			self.url_start=url+'/d/'+str(i)
-			self.img_urls.append(self.url_start)
+			self.url_list.append(self.url_start)
 
-		for j in self.img_urls:
-			self.img_url(j)
+		for j in self.url_list:
+			if self.mistart_collection.find_one({'主题页面': j}):
+				print(j,'页面已经爬取')
+			else:
+				self.img_url(j)
 
-	def img_url(self,imgurl):
-		html=requests.get(imgurl)
-		html_title=BeautifulSoup(html.text, 'lxml')
-		#img_url=BeautifulSoup(html.text, 'lxml').find_all('img')
-		self.title=html_title.title.get_text()
+	def img_url(self,http_url):
+		html=requests.get(http_url)
+		html_img=etree.HTML(html.text)
+		self.img_urls=html_img.xpath('//img/@src')
+		title =html_img.xpath('/html/head/title/text()')
+		self.title= title[0].strip()
 		path = str(self.title).replace('?', '_')
-		# 调用mkdir函数创建文件夹！这儿path代表的是标题title
 		self.mkdir(path)
 		os.chdir("F:\MISTAR\\" + path)
-		print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '开始保存:', self.title, '路径:', 'F:\MISTAR\\', path)
-		html_img=etree.HTML(html.text)
-		result=html_img.xpath('//img/@src')
-		self.max_num=result[-1][-8:-4]
-		print(self.max_num)
-		for j in result:
-			self.save(j)
+		self.max_num=self.img_urls[-1][-8:-4]
+		print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '开始保存:', self.title, '--数量:',int(self.max_num),'--路径:', 'F:\MISTAR\\', path)
+		for j in self.img_urls:
+			self.save_mongo(j,http_url)
+
+	def save_mongo(self,img_url,web):
+		name = img_url[-8:-4]
+		name = str(name).replace('/', '_')
+		if name == self.max_num:
+			print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'max', name)
+			self.save(img_url,name)
+			post = {
+				'标题': self.title,
+				'主题页面': web,
+				'图片地址': self.img_urls,
+				'获取时间': datetime.datetime.now()
+			}
+			# 把信息存入mongodb
+			self.mistart_collection.save(post)
+			# print(post)
+			print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), post['标题'], '已存入monggodb')
+		else:
+			print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'save', name)
+			self.save(img_url,name)
 
 
-	def save(self, img_url):
-			name = img_url[-8:-4]
-			name=str(name).replace('/', '_')
-			page=img_url[-8:-4]
-			print(page)
-			if page==self.max_num:
-				print('max')
-				img = requests.get(img_url)
-				f = open(name + '.jpg', 'ab')
-				f.write(img.content)
-				f.close()
-				post = {
-					'标题': self.title,
-					'主题页面': self.url_start,
-					'图片地址': self.img_urls,
-					'获取时间': datetime.datetime.now()
-				}
-				# 把信息存入mongodb
-				self.mistart_collection.save(post)
-				# print(post)
-				print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), post['标题'], '已存入monggodb')
-				print(post)
-			else:
-				print('save')
-				img = requests.get(img_url)
-				f = open(name + '.jpg', 'ab')
-				f.write(img.content)
-				f.close()
+	def save(self, img_url,name):
+		img = requests.get(img_url)
+		f = open(name + '.jpg', 'ab')
+		f.write(img.content)
+		f.close()
+
 
 	def mkdir(self, path):
 		path = path.strip()
