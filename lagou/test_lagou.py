@@ -26,6 +26,7 @@ def get_json(url, page, lang_name,city):
 	data = {'first': 'true', 'pn': page, 'kd': lang_name, 'city':city}
 	# post请求
 	json = requests.post(url, data, headers=headers).json()
+	print(type(json))
 	list_con = json['content']['positionResult']['result']
 	info_list = []
 	for i in list_con:

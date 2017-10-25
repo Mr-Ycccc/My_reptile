@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import requests
 import re
 import random
@@ -8,7 +9,7 @@ from bs4 import BeautifulSoup
 class download():
 	def __init__(self):
 
-		self.iplist = []  ##初始化一个list用来存放我们获取到的IP
+		self.iplist = []
 		headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
 		url = 'http://www.xicidaili.com/nn/'
 		html = requests.get(url, headers=headers)
@@ -20,6 +21,7 @@ class download():
 			if len(iplistn) != 0:
 				ip = '%s:%s' % (iplistn[0], iplistn[1])
 				self.iplist.append(ip)
+		#print(self.iplist)
 
 		self.user_agent_list = [
 			"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
